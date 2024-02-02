@@ -6,7 +6,9 @@ const connection = require("./connection.js");
 // const userRoute = require("./routes/user.route.js");
 // const chatRoute = require("./routes/chat.route.js");
 // const messageRoute = require("./routes/message.route.js");
-require("dotenv").config();
+require("dotenv").config({
+  path: "./.env",
+});
 
 const app = express();
 const port = process.env.PORT || 8080;
