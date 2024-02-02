@@ -3,9 +3,9 @@ const { createServer } = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const connection = require("./connection.js");
-// const userRoute = require("./routes/user.route.js");
-// const chatRoute = require("./routes/chat.route.js");
-// const messageRoute = require("./routes/message.route.js");
+const userRoute = require("./routes/user.route.js");
+const chatRoute = require("./routes/chat.route.js");
+const messageRoute = require("./routes/message.route.js");
 require("dotenv").config({
   path: "./.env",
 });
@@ -39,11 +39,11 @@ app.use(
 
 app.use(express.json());
 
-// app.use("/api/users", userRoute);
+app.use("/api/users", userRoute);
 
-// app.use("/api/chats", chatRoute);
+app.use("/api/chats", chatRoute);
 
-// app.use("/api/messages", messageRoute);
+app.use("/api/messages", messageRoute);
 
 app.get("/api", (req, res) => {
   try {
