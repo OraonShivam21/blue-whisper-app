@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const ApiError = require("../utils/ApiError");
-const asyncHandler = require("../utils/asyncHandler");
 const { removeUnusedMulterImageFilesOnError } = require("../utils/helpers");
 
 const errorHandler = (err, req, res, next) => {

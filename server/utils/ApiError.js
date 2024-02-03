@@ -1,0 +1,1 @@
+const errorHandler = require("../middlewares/error.middlewares")
