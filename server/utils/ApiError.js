@@ -1,5 +1,3 @@
-const errorHandler = require("../middlewares/error.middlewares");
-
 class ApiError extends Error {
   constructor(
     statusCode,
