@@ -221,3 +221,42 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Mail has been sent to your mail ID"));
 });
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) throw new ApiError(401, "Unauthorized access");
+
+  try {
+    const decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+    const user = await User.findById(decoded?._id);
+    if (!user) throw new ApiError(401, "Invalid refresh token");
+
+    // check if incoming refresh token is same as the refresh token attached in the user document
+    // this shows that the refresh token is used or not
+    // once it is used, replace it with new refresh token
+    if (incomingRefreshToken !== user?.refreshToken)
+      throw new ApiError(401, "Refresh token is expired or used");
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccessAndRefreshTokens(user._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken)
+      .cookie("refreshToken", newRefreshToken)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken: newRefreshToken },
+          "Access token refreshed"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token");
+  }
+});
