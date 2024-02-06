@@ -112,7 +112,7 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 
   // compare the incoming password with hashed password
-  const isPasswordValid = await user.isPasswordValid(password);
+  const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) throw new ApiError(401, "Invalid user credentials");
 
@@ -276,7 +276,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
   // save the hashed version of the token and expiry in the DB
   user.forgotPasswordToken = hashedToken;
   user.forgotPasswordExpiry = tokenExpiry;
-  await user.save({ validateBeforeSave: true });
+  await user.save({ validateBeforeSave: false });
 
   // send mail with the password reset link, it should be the link of hte frontend url with token
   await sendEmail({
@@ -333,4 +333,21 @@ const resetForgottenPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password reset successfully"));
 });
 
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
 
+  //check the old password
+  const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordValid) throw new ApiError(400, "Invalid old password");
+
+  // assign new password in plain text
+  // we have a pre save method attached to user schema which automatically hashed the password whenever added/modified
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
