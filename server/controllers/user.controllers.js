@@ -372,3 +372,68 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
+
+const handleSocialLogin = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id);
+
+  if (!user) throw new ApiError(404, "User does not exists");
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  return res
+    .status(301)
+    .cookie("accessToken", accessToken)
+    .cookie("refreshToken", refreshToken)
+    .redirect(
+      `${process.env.CLIENT_SSO_REDIRECT_URL}?accessToken=${accessToken}&refreshToken={refreshToken}`
+    );
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  // check if user has uploaded an avatar
+  if (!req.file?.filename) throw new ApiError(400, "Avatar image is required");
+
+  // get avatar file system url and local path
+  const avatarUrl = getStaticFilePath(req, req.file?.filename);
+  const avatarLocalPath = getLocalPath(req.file?.filename);
+
+  const user = await User.findById(req.user._id);
+
+  let updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        // set newly uploaded avatar
+        avatar: {
+          url: avatarUrl,
+          localPath: avatarLocalPath,
+        },
+      },
+    },
+    { new: true }
+  ).select(
+    "-password -refreshToken -emailVerificationToken -emailVerificationExpiry"
+  );
+
+  // remove the old avatar
+  removeLocalFile(user.avatar.localPath);
+});
+
+module.exports = {
+  assignRole,
+  changeCurrentPassword,
+  forgotPasswordRequest,
+  getCurrentUser,
+  handleSocialLogin,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  registerUser,
+  resendEmailVerification,
+  resendEmailVerification,
+  resetForgottenPassword,
+  updateUserAvatar,
+  verifyEmail,
+};
