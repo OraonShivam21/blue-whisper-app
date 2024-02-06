@@ -260,3 +260,43 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, error?.message || "Invalid refresh token");
   }
 });
+
+const forgotPasswordRequest = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  // get email from the client and check if user exists
+  const user = await User.findOne({ email });
+
+  if (!user) throw new ApiError(404, "User does not exists", []);
+
+  // generate a temporary token
+  const { unHashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+
+  // save the hashed version of the token and expiry in the DB
+  user.forgotPasswordToken = hashedToken;
+  user.forgotPasswordExpiry = tokenExpiry;
+  await user.save({ validateBeforeSave: true });
+
+  // send mail with the password reset link, it should be the link of hte frontend url with token
+  await sendEmail({
+    email: user?.email,
+    subject: "Password reset request",
+    mailgenContent: forgotPasswordMailgenContent(
+      user.username,
+      `${req.protocol}://${req.get(
+        "host"
+      )}/api/users/reset-password/${unHashedToken}`
+    ),
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "Password reset mail has been sent on your mail id"
+      )
+    );
+});
