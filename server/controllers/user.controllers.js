@@ -432,7 +432,6 @@ module.exports = {
   refreshAccessToken,
   registerUser,
   resendEmailVerification,
-  resendEmailVerification,
   resetForgottenPassword,
   updateUserAvatar,
   verifyEmail,
