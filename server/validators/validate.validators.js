@@ -16,3 +16,5 @@ const validate = (req, res, next) => {
   // 422: Unprocessable Entity
   throw new ApiError(422, "Received data is not valid", extractedErrors);
 };
+
+module.exports = validate;
