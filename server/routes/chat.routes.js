@@ -46,7 +46,7 @@ router
   .route("/group/:chatId")
   .get(mongoIdPathVariableValidator("chatId"), validate, getGroupChatDetails)
   .patch(
-    mongoIdPathVariableValidator("chatId").updateGroupChatNameValidator(),
+    mongoIdPathVariableValidator("chatId"),updateGroupChatNameValidator(),
     validate,
     renameGroupChat
   )
