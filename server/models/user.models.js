@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const SocialProfile = require("./profile.model");
 
 const userSchema = new mongoose.Schema(
   {
@@ -69,22 +68,6 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 5);
-  next();
-});
-
-userSchema.post("save", async function (user, next) {
-  const socialProfile = await SocialProfile.findOne({ owner: user._id });
-
-  if (!socialProfile) {
-    await SocialProfile.create({
-      owner: user._id,
-    });
-  }
-});
 
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
