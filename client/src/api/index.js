@@ -43,7 +43,7 @@ const getUserChats = () => {
   return apiClient.get(`/chats`);
 };
 
-const createUserChats = (receiverId) => {
+const createUserChat = (receiverId) => {
   return apiClient.post(`/chats/c/${receiverId}`);
 };
 
@@ -94,7 +94,7 @@ const sendMessage = (chatId, content, attachments) => {
 export {
   addParticipantToGroup,
   createGroupChat,
-  createUserChats,
+  createUserChat,
   deleteGroup,
   deleteOneOnOneChat,
   getAvailableUsers,
