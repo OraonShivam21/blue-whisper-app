@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, logoutUser, registerUser } from "../api";
 import { LocalStorage, requestHandler } from "../utils";
-import { Loader } from "../components/Loader";
+import Loader from "../components/Loader";
 
 // create a context to manage authentication-related data and functions
 const AuthContext = createContext({
