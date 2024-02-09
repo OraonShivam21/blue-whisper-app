@@ -24,23 +24,23 @@ apiClient.interceptors.request.use(
 
 // api functions for different actions / routes
 const loginUser = (data) => {
-  return apiClient.post("/users/login", data);
+  return apiClient.post(`/users/login`, data);
 };
 
 const registerUser = (data) => {
-  return apiClient.post("/users/register", data);
+  return apiClient.post(`/users/register`, data);
 };
 
 const logoutUser = () => {
-  return apiClient.post("/users/logout");
+  return apiClient.post(`/users/logout`);
 };
 
 const getAvailableUsers = () => {
-  return apiClient.get("/chats/users");
+  return apiClient.get(`/chats/users`);
 };
 
 const getUserChats = () => {
-  return apiClient.get("/chats");
+  return apiClient.get(`/chats`);
 };
 
 const createUserChats = (receiverId) => {
@@ -49,4 +49,62 @@ const createUserChats = (receiverId) => {
 
 const createGroupChat = (data) => {
   return apiClient.post(`/chats/group`, data);
+};
+
+const getGroupInfo = (chatId) => {
+  return apiClient.get(`/chats/group/${chatId}`);
+};
+
+const updateGroupName = (chatId, name) => {
+  return apiClient.patch(`/chats/group/${chatId}`, { name });
+};
+
+const deleteGroup = (chatId) => {
+  return apiClient.delete(`/chats/group/${chatId}`);
+};
+
+const deleteOneOnOneChat = (chatId) => {
+  return apiClient.delete(`/chats/remove/${chatId}`);
+};
+
+const addParticipantToGroup = (chatId, participantId) => {
+  return apiClient.post(`/chats/group/${chatId}/${participantId}`);
+};
+
+const removeParticipantFromGroup = (chatId, participantId) => {
+  return apiClient.delete(`/chats/group/${chatId}/${participantId}`);
+};
+
+const getChatMessages = (chatId) => {
+  return apiClient.get(`/messages/${chatId}`);
+};
+
+const sendMessage = (chatId, content, attachments) => {
+  const formData = new FormData();
+  if (content) {
+    formData.append("content", content);
+  }
+  attachments?.map((file) => {
+    formData.append("attachments", file);
+  });
+  return apiClient.post(`/messages/${chatId}`, formData);
+};
+
+// export all the API functions
+export {
+  addParticipantToGroup,
+  createGroupChat,
+  createUserChats,
+  deleteGroup,
+  deleteOneOnOneChat,
+  getAvailableUsers,
+  getChatMessages,
+  getGroupInfo,
+  getUserChats,
+  loginUser,
+  logoutUser,
+  registerUser,
+  removeParticipantFromGroup,
+  sendMessage,
+  updateGroupName,
 };
