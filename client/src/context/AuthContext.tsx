@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { UserInterface } from "../interfaces/user";
 import { useNavigate } from "react-router-dom";
+import { loginUser, logoutUser, registerUser } from "../api";
 import { LocalStorage, requestHandler } from "../utils";
+import Loader from "../components/Loader";
 
 // Create a context to manage authentication-related data and functions
 const AuthContext = createContext<{
@@ -46,9 +48,63 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setToken(data.accessToken);
         LocalStorage.set("user", data.user);
         LocalStorage.set("token", data.accessToken);
-        navigate("/chat");
+        navigate("/chat"); // Redirect to the chat page after successful login
+      },
+      alert // Display error alerts on request failure
+    );
+  };
+
+  // Function to handle user registration
+  const register = async (data: {
+    email: string;
+    username: string;
+    password: string;
+  }) => {
+    await requestHandler(
+      async () => await registerUser(data),
+      setIsLoading,
+      () => {
+        alert("Account created successfully! Please go ahead and login.");
+        navigate("/login"); // Redirect to the login page after successful registration
+      },
+      alert // Display error alerts on request failure
+    );
+  };
+
+  // Function to handle user logout
+  const logout = async () => {
+    await requestHandler(
+      async () => await logoutUser(),
+      setIsLoading,
+      () => {
+        setUser(null);
+        setToken(null);
+        LocalStorage.clear(); // Clear local storage on logout
+        navigate("/login"); // Redirect to the login page after successful logout
       },
       alert
     );
   };
+
+  // Check for saved user and token in local storage during component initialization
+  useEffect(() => {
+    setIsLoading(true);
+    const _token = LocalStorage.get("token");
+    const _user = LocalStorage.get("user");
+    if (_token && _user?.id) {
+      setUser(_user);
+      setToken(_token);
+    }
+    setIsLoading(false);
+  }, []);
+
+  // Provide authentication-related data and functions throughout the context
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, token }}>
+      {isLoading ? <Loader /> : children} {/* Display a loader while loading */}
+    </AuthContext.Provider>
+  );
 };
+
+// Export the context, provider component, and custom hook
+export { AuthContext, AuthProvider, useAuth };
