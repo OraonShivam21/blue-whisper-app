@@ -51,7 +51,7 @@ const createUserChat = (receiverId: string) => {
   return apiClient.post(`/chats/c/${receiverId}`);
 };
 
-const createGroupChat = (data: { name: string; participant: string[] }) => {
+const createGroupChat = (data: { name: string; participants: string[] }) => {
   return apiClient.post("/chats/group", data);
 };
 
