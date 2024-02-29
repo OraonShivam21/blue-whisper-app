@@ -1,6 +1,6 @@
 import { UserInterface } from "./user";
 
-export interface ChatListenItemInterface {
+export interface ChatListItemInterface {
   _id: string;
   name: string;
   admin: string;
