@@ -4,7 +4,7 @@ import {
   UserGroupIcon,
   XCircleIcon,
   XMarkIcon,
-} from "@heroicons/react/16/solid";
+} from "@heroicons/react/20/solid";
 import { createGroupChat, createUserChat, getAvailableUsers } from "../../api";
 import { ChatListItemInterface } from "../../interfaces/chat";
 import { UserInterface } from "../../interfaces/user";
