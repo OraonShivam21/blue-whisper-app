@@ -45,7 +45,7 @@ export const requestHandler = async (
 
 // The utility function generates metadata for chat objects.
 // It takes into consideration both group chats and individual chats.
-export const getChatObjectMetaData = (
+export const getChatObjectMetadata = (
   chat: ChatListenItemInterface, // The chat item for which metadata is being generated.
   loggedInUser: UserInterface // The currently-logged in user details.
 ) => {
